@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, Edit, Trash2, Eye, Filter, Download, ArrowUpDown, Package, Calendar, User, MapPin } from 'lucide-react';
+import { Search, Plus, Edit, Trash2, Eye, Filter, Download, ArrowUpDown, Package, Calendar, User, MapPin, FileSpreadsheet } from 'lucide-react';
 import api from '../../utils/axiosConfig';
 import MovementForm from './MovementForm';
 import MovementDetail from './MovementDetail';
-import { exportToCSV } from '../../utils/exportUtils';
 import { useAuth } from '../../hooks/useAuth';
+import { useExcelExport } from '../../hooks/useExcelExport';
 
 const MovementList = () => {
   const { user } = useAuth();
@@ -20,6 +20,7 @@ const MovementList = () => {
   const [showDetail, setShowDetail] = useState(false);
   const [selectedMovement, setSelectedMovement] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { isExporting, exportToExcel } = useExcelExport();
 
   useEffect(() => {
     fetchMovements();
@@ -146,26 +147,7 @@ const MovementList = () => {
   };
 
   const handleExport = () => {
-    const exportData = filteredMovements.map(movement => ({
-      'ID': movement.id,
-      'Artículo': movement.articulo?.nombre || 'N/A',
-      'Código Artículo': movement.articulo?.codigo || 'N/A',
-      'Tipo': getTypeLabel(movement.tipo),
-      'Cantidad': movement.cantidad,
-      'Stock Anterior': movement.stock_anterior,
-      'Stock Nuevo': movement.stock_nuevo,
-      'Motivo': movement.motivo,
-      'Referencia': movement.referencia || 'N/A',
-      'Ubicación Origen': movement.ubicacion_origen || 'N/A',
-      'Ubicación Destino': movement.ubicacion_destino || 'N/A',
-      'Asignado a': movement.asignado_a || 'N/A',
-      'Recibido por': movement.recibido_por || 'N/A',
-      'Usuario': movement.usuario?.nombre_completo || 'N/A',
-      'Fecha': new Date(movement.fecha_creacion).toLocaleString('es-ES'),
-      'Observaciones': movement.observaciones || 'N/A'
-    }));
-    
-    exportToCSV(exportData, 'movimientos');
+    exportToExcel('/api/reports/export/movimientos', 'export_movimientos.xlsx');
   };
 
   const getTypeLabel = (type) => {
@@ -230,10 +212,11 @@ const MovementList = () => {
         <div className="flex gap-2">
           <button
             onClick={handleExport}
-            className="flex items-center space-x-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            disabled={isExporting}
+            className="flex items-center space-x-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Download size={18} />
-            <span>Exportar</span>
+            <FileSpreadsheet size={18} />
+            <span>{isExporting ? 'Exportando...' : 'Exportar Excel'}</span>
           </button>
           <button
             onClick={() => {

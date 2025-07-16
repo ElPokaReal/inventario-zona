@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, Edit, Trash2, Eye, Filter, Download, Monitor, AlertTriangle, CheckCircle, XCircle, MapPin, User } from 'lucide-react';
+import { Search, Plus, Edit, Trash2, Eye, Filter, Download, Monitor, AlertTriangle, CheckCircle, XCircle, MapPin, User, FileSpreadsheet } from 'lucide-react';
 import axios from 'axios';
 import EquipmentForm from './EquipmentForm';
 import EquipmentDetail from './EquipmentDetail';
-import { exportToCSV } from '../../utils/exportUtils';
 import { useAuth } from '../../hooks/useAuth';
+import { useExcelExport } from '../../hooks/useExcelExport';
 import toast from 'react-hot-toast';
 
 const EquipmentList = () => {
@@ -21,6 +21,7 @@ const EquipmentList = () => {
   const [showDetail, setShowDetail] = useState(false);
   const [selectedEquipment, setSelectedEquipment] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { isExporting, exportToExcel } = useExcelExport();
 
   useEffect(() => {
     fetchEquipments();
@@ -217,32 +218,7 @@ const EquipmentList = () => {
   };
 
   const handleExport = () => {
-    try {
-      const exportData = filteredEquipments.map(equipment => ({
-        'Código Inventario': equipment.codigo_inventario,
-        'Tipo': equipment.tipo,
-        'Marca': equipment.marca,
-        'Modelo': equipment.modelo,
-        'Número de Serie': equipment.numero_serie,
-        'Estado': getStatusLabel(equipment.estado),
-        'Ubicación': equipment.ubicacion_actual?.nombre || 'Sin ubicación',
-        'Asignado a': equipment.asignado_a?.nombre_completo || 'Sin asignar',
-        'Descripción': equipment.descripcion,
-        'Activo': equipment.esta_activo ? 'Sí' : 'No',
-        'Fecha Creación': new Date(equipment.fecha_creacion).toLocaleDateString(),
-        'Fecha Actualización': equipment.fecha_actualizacion ? new Date(equipment.fecha_actualizacion).toLocaleDateString() : 'N/A'
-      }));
-      
-      exportToCSV(exportData, 'equipos');
-      toast.success(`Exportación completada: ${exportData.length} equipos exportados`, {
-        duration: 3000,
-        icon: '📊',
-      });
-    } catch (error) {
-      toast.error('Error al exportar los datos', {
-        duration: 4000,
-      });
-    }
+    exportToExcel('/api/reports/export/equipos', 'export_equipos.xlsx');
   };
 
   const getStatusLabel = (status) => {
@@ -291,10 +267,11 @@ const EquipmentList = () => {
         <div className="flex gap-2">
           <button
             onClick={handleExport}
-            className="flex items-center space-x-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            disabled={isExporting}
+            className="flex items-center space-x-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Download size={18} />
-            <span>Exportar</span>
+            <FileSpreadsheet size={18} />
+            <span>{isExporting ? 'Exportando...' : 'Exportar Excel'}</span>
           </button>
           <button
             onClick={() => {

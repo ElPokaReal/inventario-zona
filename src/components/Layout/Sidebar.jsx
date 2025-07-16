@@ -21,6 +21,8 @@ const Sidebar = ({ activeSection, onSectionChange }) => {
   const [hoveredItem, setHoveredItem] = useState(null);
   const [indicatorStyle, setIndicatorStyle] = useState({ top: 0, height: 0 });
   const navRef = useRef(null);
+  // Estado para la posición del tooltip
+  const [tooltipPos, setTooltipPos] = useState({ top: 0, left: 0 });
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: Home, roles: ['administrador', 'usuario', 'técnico'] },
@@ -112,7 +114,16 @@ const Sidebar = ({ activeSection, onSectionChange }) => {
                 <li key={item.id} className="relative">
                   <button
                     onClick={() => onSectionChange(item.id)}
-                    onMouseEnter={() => setHoveredItem(item.id)}
+                    onMouseEnter={e => {
+                      setHoveredItem(item.id);
+                      if (isCollapsed) {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        setTooltipPos({
+                          top: rect.top + rect.height / 2,
+                          left: rect.right + 8
+                        });
+                      }
+                    }}
                     onMouseLeave={() => setHoveredItem(null)}
                     className={`w-full flex items-center ${isCollapsed ? 'justify-center px-3' : 'space-x-3 px-4'} py-3 rounded-lg text-left transition-all duration-200 relative z-10 ${
                       isActive
@@ -141,7 +152,16 @@ const Sidebar = ({ activeSection, onSectionChange }) => {
           <div className="relative">
             <button
               onClick={logout}
-              onMouseEnter={() => setHoveredItem('logout')}
+              onMouseEnter={e => {
+                setHoveredItem('logout');
+                if (isCollapsed) {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  setTooltipPos({
+                    top: rect.top + rect.height / 2,
+                    left: rect.right + 9
+                  });
+                }
+              }}
               onMouseLeave={() => setHoveredItem(null)}
               className={`w-full flex items-center ${isCollapsed ? 'justify-center px-3' : 'space-x-3 px-4'} py-2 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 hover:shadow-sm`}
             >
@@ -154,17 +174,15 @@ const Sidebar = ({ activeSection, onSectionChange }) => {
 
       {/* Portal para tooltips - Completamente fuera del sidebar */}
       {isCollapsed && hoveredItem && (
-        <div 
+        <div
           className="fixed z-[9999] pointer-events-none"
           style={{
-            left: '72px', // Más separado del sidebar (16px de ancho + 8px de margen + 48px de espacio)
-            top: hoveredItem === 'logout' 
-              ? `${window.innerHeight - 80}px` // Para logout
-              : `${140 + (visibleItems.findIndex(item => item.id === hoveredItem) * 56)}px`, // Para items del menú
+            left: `${tooltipPos.left}px`,
+            top: `${tooltipPos.top}px`,
             transform: 'translateY(-50%)',
           }}
         >
-          <div 
+          <div
             className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap shadow-xl border border-gray-700 relative animate-in slide-in-from-left-2 duration-200"
           >
             {hoveredItem === 'logout' 

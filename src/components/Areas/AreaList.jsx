@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, Edit, Trash2, Eye, Filter, Download, MapPin, Building, User } from 'lucide-react';
+import { Search, Plus, Edit, Trash2, Eye, Filter, Download, MapPin, Building, User, FileSpreadsheet } from 'lucide-react';
 import axios from 'axios';
 import AreaForm from './AreaForm';
 import AreaDetail from './AreaDetail';
-import { exportToCSV } from '../../utils/exportUtils';
 import { useAuth } from '../../hooks/useAuth';
+import { useExcelExport } from '../../hooks/useExcelExport';
 
 const AreaList = () => {
   const { user } = useAuth();
@@ -15,6 +15,7 @@ const AreaList = () => {
   const [showDetail, setShowDetail] = useState(false);
   const [selectedArea, setSelectedArea] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { isExporting, exportToExcel } = useExcelExport();
 
   useEffect(() => {
     fetchAreas();
@@ -131,17 +132,7 @@ const AreaList = () => {
   };
 
   const handleExport = () => {
-    const exportData = filteredAreas.map(area => ({
-      'Código': area.codigo || 'N/A',
-      'Nombre': area.nombre,
-      'Descripción': area.descripcion || 'N/A',
-      'Responsable': area.responsable ? `${area.responsable.nombre_completo} (${area.responsable.departamento})` : 'N/A',
-      'Estado': area.esta_activa ? 'Activa' : 'Inactiva',
-      'Fecha Creación': new Date(area.fecha_creacion).toLocaleDateString(),
-      'Fecha Actualización': area.fecha_actualizacion ? new Date(area.fecha_actualizacion).toLocaleDateString() : 'N/A'
-    }));
-    
-    exportToCSV(exportData, 'areas-sistema');
+    exportToExcel('/api/reports/export/areas', 'export_areas.xlsx');
   };
 
   if (loading) {
@@ -163,10 +154,11 @@ const AreaList = () => {
         <div className="flex gap-2">
           <button
             onClick={handleExport}
-            className="flex items-center space-x-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            disabled={isExporting}
+            className="flex items-center space-x-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Download size={18} />
-            <span>Exportar</span>
+            <FileSpreadsheet size={18} />
+            <span>{isExporting ? 'Exportando...' : 'Exportar Excel'}</span>
           </button>
           <button
             onClick={() => {

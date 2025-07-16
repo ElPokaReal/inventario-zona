@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, Edit, Trash2, Eye, Filter, Download, Tag, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
+import { Search, Plus, Edit, Trash2, Eye, Filter, Download, Tag, AlertTriangle, CheckCircle, XCircle, FileSpreadsheet } from 'lucide-react';
 import axios from 'axios';
 import CategoryForm from './CategoryForm';
 import CategoryDetail from './CategoryDetail';
-import { exportToCSV } from '../../utils/exportUtils';
 import { useAuth } from '../../hooks/useAuth';
+import { useExcelExport } from '../../hooks/useExcelExport';
 import toast from 'react-hot-toast';
 
 const CategoryList = () => {
@@ -16,6 +16,7 @@ const CategoryList = () => {
   const [showDetail, setShowDetail] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { isExporting, exportToExcel } = useExcelExport();
 
   useEffect(() => {
     fetchCategories();
@@ -175,25 +176,7 @@ const CategoryList = () => {
   };
 
   const handleExport = () => {
-    try {
-      const exportData = filteredCategories.map(category => ({
-        'Nombre': category.nombre,
-        'Descripción': category.descripcion || 'Sin descripción',
-        'Estado': category.esta_activa ? 'Activa' : 'Inactiva',
-        'Fecha Creación': new Date(category.fecha_creacion).toLocaleDateString(),
-        'Fecha Actualización': category.fecha_actualizacion ? new Date(category.fecha_actualizacion).toLocaleDateString() : 'N/A'
-      }));
-      
-      exportToCSV(exportData, 'categorias');
-      toast.success(`Exportación completada: ${exportData.length} categorías exportadas`, {
-        duration: 3000,
-        icon: '📊',
-      });
-    } catch (error) {
-      toast.error('Error al exportar los datos', {
-        duration: 4000,
-      });
-    }
+    exportToExcel('/api/reports/export/categorias', 'export_categorias.xlsx');
   };
 
   const getStatusIcon = (isActive) => {
@@ -223,10 +206,11 @@ const CategoryList = () => {
         <div className="flex gap-2">
           <button
             onClick={handleExport}
-            className="flex items-center space-x-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            disabled={isExporting}
+            className="flex items-center space-x-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Download size={18} />
-            <span>Exportar</span>
+            <FileSpreadsheet size={18} />
+            <span>{isExporting ? 'Exportando...' : 'Exportar Excel'}</span>
           </button>
           <button
             onClick={() => {

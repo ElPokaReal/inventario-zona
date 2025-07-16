@@ -1,14 +1,14 @@
 {
-  "name": "vite-react-jsx-starter",
+  "name": "inventario-zona",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "server": "cd server && npm run dev",
+    "server": "cd server && npm i && npm run dev",
     "start": "concurrently \"npm run dev\" \"npm run server\""
   },
   "dependencies": {

@@ -57,6 +57,10 @@ app.use('/api/historial-mantenimiento', historialMantenimientoRoutes);
 const dashboardRoutes = require('./routes/dashboardRoutes');
 app.use('/api/dashboard', dashboardRoutes);
 
+// Rutas de reportes
+const reportRoutes = require('./routes/reportRoutes');
+app.use('/api/reports', reportRoutes);
+
 // Rutas (las crearemos a continuación)
 // app.use('/api/usuarios', require('./routes/usuarioRoutes'));
 

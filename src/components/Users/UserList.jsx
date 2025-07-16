@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, Edit, Trash2, Eye, Filter, Download, User, Shield } from 'lucide-react';
+import { Search, Plus, Edit, Trash2, Eye, Filter, Download, User, Shield, FileSpreadsheet } from 'lucide-react';
 import axios from 'axios';
 import UserForm from './UserForm';
 import UserDetail from './UserDetail';
-import { exportToCSV } from '../../utils/exportUtils';
 import { useAuth } from '../../hooks/useAuth';
+import { useExcelExport } from '../../hooks/useExcelExport'; // Importar el hook
 import toast from 'react-hot-toast';
 
 const UserList = () => {
@@ -16,6 +16,7 @@ const UserList = () => {
   const [showForm, setShowForm] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const { isExporting, exportToExcel } = useExcelExport(); // Instanciar el hook
 
   useEffect(() => {
     fetchUsers();
@@ -176,29 +177,7 @@ const UserList = () => {
   };
 
   const handleExport = () => {
-    try {
-      const exportData = filteredUsers.map(user => ({
-        'Usuario': user.nombre_usuario,
-        'Nombre': user.nombre_completo,
-        'Email': user.email,
-        'Rol': getRoleLabel(user.rol.id),
-        'Departamento': user.departamento,
-        'Posición': user.posicion,
-        'Teléfono': user.telefono,
-        'Estado': user.esta_activo ? 'Activo' : 'Inactivo',
-        'Fecha Creación': new Date(user.fecha_creacion).toLocaleDateString()
-      }));
-      
-      exportToCSV(exportData, 'usuarios-sistema');
-      toast.success(`Exportación completada: ${exportData.length} usuarios exportados`, {
-        duration: 3000,
-        icon: '📊',
-      });
-    } catch (error) {
-      toast.error('Error al exportar los datos', {
-        duration: 4000,
-      });
-    }
+    exportToExcel('/reports/export/users', 'export_usuarios.xlsx');
   };
 
   const getRoleLabel = (rol_id) => {
@@ -230,10 +209,11 @@ const UserList = () => {
         <div className="flex gap-2">
           <button
             onClick={handleExport}
-            className="flex items-center space-x-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            disabled={isExporting}
+            className="flex items-center space-x-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Download size={18} />
-            <span>Exportar</span>
+            <FileSpreadsheet size={18} />
+            <span>{isExporting ? 'Exportando...' : 'Exportar Excel'}</span>
           </button>
           <button
             onClick={() => {

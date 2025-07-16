@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, Edit, Trash2, Eye, Filter, Download, Wrench, Calendar, User, Monitor, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
+import { Search, Plus, Edit, Trash2, Eye, Filter, Download, Wrench, Calendar, User, Monitor, AlertTriangle, CheckCircle, Clock, FileSpreadsheet } from 'lucide-react';
 import api from '../../utils/axiosConfig';
 import MaintenanceForm from './MaintenanceForm';
 import MaintenanceDetail from './MaintenanceDetail';
-import { exportToCSV } from '../../utils/exportUtils';
 import { useAuth } from '../../hooks/useAuth';
+import { useExcelExport } from '../../hooks/useExcelExport';
 
 const MaintenanceHistoryList = () => {
   const { user } = useAuth();
@@ -20,6 +20,7 @@ const MaintenanceHistoryList = () => {
   const [showDetail, setShowDetail] = useState(false);
   const [selectedMaintenance, setSelectedMaintenance] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { isExporting, exportToExcel } = useExcelExport();
 
   useEffect(() => {
     fetchMaintenanceHistory();
@@ -146,21 +147,7 @@ const MaintenanceHistoryList = () => {
   };
 
   const handleExport = () => {
-    const exportData = filteredMaintenance.map(maintenance => ({
-      'ID': maintenance.id,
-      'Equipo': maintenance.equipo?.codigo_inventario || 'N/A',
-      'Tipo Equipo': maintenance.equipo?.tipo || 'N/A',
-      'Problema': maintenance.descripcion_problema,
-      'Estado': getStatusLabel(maintenance.estado),
-      'Reportado por': maintenance.reportado_por?.nombre_completo || 'N/A',
-      'Técnico': maintenance.tecnico?.nombre_completo || 'Sin asignar',
-      'Fecha Inicio': new Date(maintenance.fecha_inicio).toLocaleString('es-ES'),
-      'Fecha Fin': maintenance.fecha_fin ? new Date(maintenance.fecha_fin).toLocaleString('es-ES') : 'En progreso',
-      'Costo': maintenance.costo ? `$${maintenance.costo}` : 'N/A',
-      'Observaciones': maintenance.observaciones || 'N/A'
-    }));
-    
-    exportToCSV(exportData, 'historial-mantenimiento');
+    exportToExcel('/api/reports/export/mantenimientos', 'export_mantenimientos.xlsx');
   };
 
   const getStatusLabel = (status) => {
@@ -221,10 +208,11 @@ const MaintenanceHistoryList = () => {
         <div className="flex gap-2">
           <button
             onClick={handleExport}
-            className="flex items-center space-x-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            disabled={isExporting}
+            className="flex items-center space-x-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Download size={18} />
-            <span>Exportar</span>
+            <FileSpreadsheet size={18} />
+            <span>{isExporting ? 'Exportando...' : 'Exportar Excel'}</span>
           </button>
           <button
             onClick={() => {

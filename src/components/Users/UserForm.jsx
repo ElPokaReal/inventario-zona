@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Save } from 'lucide-react';
+import { X, Save, User as UserIcon, Mail, Lock, Briefcase, Phone, Shield, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const UserForm = ({ user, onSave, onClose }) => {
@@ -16,6 +16,7 @@ const UserForm = ({ user, onSave, onClose }) => {
   });
 
   const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -76,9 +77,9 @@ const UserForm = ({ user, onSave, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onClick={onClose}>
+      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between p-4 border-b">
           <h2 className="text-xl font-semibold">
             {user ? 'Editar Usuario' : 'Nuevo Usuario'}
           </h2>
@@ -96,15 +97,18 @@ const UserForm = ({ user, onSave, onClose }) => {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Nombre de Usuario *
               </label>
-              <input
-                type="text"
-                value={formData.nombre_usuario}
-                onChange={(e) => handleChange('nombre_usuario', e.target.value)}
-                className={`w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  errors.nombre_usuario ? 'border-red-300' : 'border-gray-300'
-                }`}
-                placeholder="usuario123"
-              />
+              <div className="relative">
+                <UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                <input
+                  type="text"
+                  value={formData.nombre_usuario}
+                  onChange={(e) => handleChange('nombre_usuario', e.target.value)}
+                  className={`w-full pl-10 border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    errors.nombre_usuario ? 'border-red-300' : 'border-gray-300'
+                  }`}
+                  placeholder="usuario123"
+                />
+              </div>
               {errors.nombre_usuario && <p className="text-red-500 text-sm mt-1">{errors.nombre_usuario}</p>}
             </div>
 
@@ -112,15 +116,18 @@ const UserForm = ({ user, onSave, onClose }) => {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Nombre Completo *
               </label>
-              <input
-                type="text"
-                value={formData.nombre_completo}
-                onChange={(e) => handleChange('nombre_completo', e.target.value)}
-                className={`w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  errors.nombre_completo ? 'border-red-300' : 'border-gray-300'
-                }`}
-                placeholder="Juan Pérez"
-              />
+              <div className="relative">
+                <UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                <input
+                  type="text"
+                  value={formData.nombre_completo}
+                  onChange={(e) => handleChange('nombre_completo', e.target.value)}
+                  className={`w-full pl-10 border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    errors.nombre_completo ? 'border-red-300' : 'border-gray-300'
+                  }`}
+                  placeholder="Juan Pérez"
+                />
+              </div>
               {errors.nombre_completo && <p className="text-red-500 text-sm mt-1">{errors.nombre_completo}</p>}
             </div>
 
@@ -128,15 +135,18 @@ const UserForm = ({ user, onSave, onClose }) => {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Email *
               </label>
-              <input
-                type="email"
-                value={formData.email}
-                onChange={(e) => handleChange('email', e.target.value)}
-                className={`w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  errors.email ? 'border-red-300' : 'border-gray-300'
-                }`}
-                placeholder="usuario@empresa.com"
-              />
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                <input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => handleChange('email', e.target.value)}
+                  className={`w-full pl-10 border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    errors.email ? 'border-red-300' : 'border-gray-300'
+                  }`}
+                  placeholder="usuario@empresa.com"
+                />
+              </div>
               {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
             </div>
 
@@ -145,15 +155,26 @@ const UserForm = ({ user, onSave, onClose }) => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Contraseña *
                 </label>
-                <input
-                  type="password"
-                  value={formData.contrasena}
-                  onChange={(e) => handleChange('contrasena', e.target.value)}
-                  className={`w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    errors.contrasena ? 'border-red-300' : 'border-gray-300'
-                  }`}
-                  placeholder="********"
-                />
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={formData.contrasena}
+                    onChange={(e) => handleChange('contrasena', e.target.value)}
+                    className={`w-full pl-10 pr-10 border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      errors.contrasena ? 'border-red-300' : 'border-gray-300'
+                    }`}
+                    placeholder="********"
+                  />
+                  <button
+                    type="button"
+                    tabIndex={-1}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-700"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
                 {errors.contrasena && <p className="text-red-500 text-sm mt-1">{errors.contrasena}</p>}
               </div>
             )}
@@ -162,30 +183,36 @@ const UserForm = ({ user, onSave, onClose }) => {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Rol *
               </label>
-              <select
-                value={formData.rol_id}
-                onChange={(e) => handleChange('rol_id', parseInt(e.target.value))}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value={1}>Administrador</option>
-                <option value={2}>Técnico</option>
-                <option value={3}>Usuario</option>
-              </select>
+              <div className="relative">
+                <Shield className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                <select
+                  value={formData.rol_id}
+                  onChange={(e) => handleChange('rol_id', parseInt(e.target.value))}
+                  className="w-full pl-10 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value={1}>Administrador</option>
+                  <option value={2}>Técnico</option>
+                  <option value={3}>Usuario</option>
+                </select>
+              </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Departamento *
               </label>
-              <input
-                type="text"
-                value={formData.departamento}
-                onChange={(e) => handleChange('departamento', e.target.value)}
-                className={`w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  errors.departamento ? 'border-red-300' : 'border-gray-300'
-                }`}
-                placeholder="Soporte Técnico"
-              />
+              <div className="relative">
+                <Briefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                <input
+                  type="text"
+                  value={formData.departamento}
+                  onChange={(e) => handleChange('departamento', e.target.value)}
+                  className={`w-full pl-10 border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    errors.departamento ? 'border-red-300' : 'border-gray-300'
+                  }`}
+                  placeholder="Soporte Técnico"
+                />
+              </div>
               {errors.departamento && <p className="text-red-500 text-sm mt-1">{errors.departamento}</p>}
             </div>
 
@@ -193,15 +220,18 @@ const UserForm = ({ user, onSave, onClose }) => {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Posición *
               </label>
-              <input
-                type="text"
-                value={formData.posicion}
-                onChange={(e) => handleChange('posicion', e.target.value)}
-                className={`w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  errors.posicion ? 'border-red-300' : 'border-gray-300'
-                }`}
-                placeholder="Técnico de Soporte"
-              />
+              <div className="relative">
+                <Briefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                <input
+                  type="text"
+                  value={formData.posicion}
+                  onChange={(e) => handleChange('posicion', e.target.value)}
+                  className={`w-full pl-10 border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    errors.posicion ? 'border-red-300' : 'border-gray-300'
+                  }`}
+                  placeholder="Técnico de Soporte"
+                />
+              </div>
               {errors.posicion && <p className="text-red-500 text-sm mt-1">{errors.posicion}</p>}
             </div>
 
@@ -209,15 +239,18 @@ const UserForm = ({ user, onSave, onClose }) => {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Teléfono *
               </label>
-              <input
-                type="tel"
-                value={formData.telefono}
-                onChange={(e) => handleChange('telefono', e.target.value)}
-                className={`w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  errors.telefono ? 'border-red-300' : 'border-gray-300'
-                }`}
-                placeholder="+1234567890"
-              />
+              <div className="relative">
+                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                <input
+                  type="tel"
+                  value={formData.telefono}
+                  onChange={(e) => handleChange('telefono', e.target.value)}
+                  className={`w-full pl-10 border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    errors.telefono ? 'border-red-300' : 'border-gray-300'
+                  }`}
+                  placeholder="+1234567890"
+                />
+              </div>
               {errors.telefono && <p className="text-red-500 text-sm mt-1">{errors.telefono}</p>}
             </div>
 
