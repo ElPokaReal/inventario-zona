@@ -7,7 +7,7 @@ const AppDataSource = new DataSource({
     username: process.env.DB_USER || "root",
     password: process.env.DB_PASSWORD || "",
     database: process.env.DB_NAME || "inventario_db",
-    synchronize: true, // ¡Cuidado! true solo para desarrollo, sincroniza el esquema.
+    synchronize: false, // ¡Cuidado! true solo para desarrollo, sincroniza el esquema. En producción, usar migraciones.
     logging: false,
     entities: [
         __dirname + "/../entities/Articulo.js",

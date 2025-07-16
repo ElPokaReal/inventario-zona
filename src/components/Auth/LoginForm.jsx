@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Lock, Loader2, Eye, EyeOff } from 'lucide-react'; // Agrego Eye y EyeOff
+import { Mail, Lock, Loader2, Eye, EyeOff, User } from 'lucide-react'; // Agrego Eye y EyeOff
 import { useAuth } from '../../hooks/useAuth';
 import toast from 'react-hot-toast';
 
@@ -52,7 +52,7 @@ const LoginForm = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email Input */}
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
               <input
                 id="username"
                 type="text"
