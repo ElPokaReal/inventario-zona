@@ -20,7 +20,9 @@ const AppDataSource = new DataSource({
         __dirname + "/../entities/Rol.js",
         __dirname + "/../entities/Usuario.js",
     ],
-    migrations: [],
+    migrations: [
+        __dirname + '/../migrations/*.js'
+    ],
     subscribers: [],
 });
 

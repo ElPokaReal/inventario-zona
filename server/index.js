@@ -25,42 +25,6 @@ async function setupDatabase() {
     }
 }
 
-// Asegura que la tabla 'roles' exista y tenga las columnas esperadas
-async function ensureRolesTable() {
-    const dbName = process.env.DB_NAME || "inventario_db";
-    try {
-        // Crear tabla roles si no existe, incluyendo la columna esta_activo
-        await AppDataSource.query(`
-            CREATE TABLE IF NOT EXISTS roles (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                nombre VARCHAR(50) NOT NULL UNIQUE,
-                esta_activo BOOLEAN DEFAULT TRUE
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-        `);
-
-        // Verificar si la columna 'esta_activo' existe; si no, agregarla
-        const checkColumn = await AppDataSource.query(
-            `SELECT COUNT(*) AS cnt
-             FROM INFORMATION_SCHEMA.COLUMNS
-             WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'roles' AND COLUMN_NAME = 'esta_activo'`,
-            [dbName]
-        );
-
-        const count = Array.isArray(checkColumn)
-            ? (checkColumn[0]?.cnt ?? checkColumn[0]?.['COUNT(*)'] ?? 0)
-            : 0;
-
-        if (!Number(count)) {
-            await AppDataSource.query(
-                `ALTER TABLE roles ADD COLUMN esta_activo BOOLEAN DEFAULT TRUE`
-            );
-        }
-    } catch (error) {
-        console.error("Error al asegurar la tabla 'roles':", error);
-        throw error;
-    }
-}
-
 async function seedDatabase() {
     try {
         const rolRepository = AppDataSource.getRepository(Rol);
@@ -102,8 +66,9 @@ async function main() {
         await AppDataSource.initialize();
         console.log("Conexión con TypeORM inicializada.");
 
-        // Asegurar que la tabla 'roles' exista antes de ejecutar el seeder
-        await ensureRolesTable();
+        // Ejecutar migraciones de TypeORM (crea tablas/relaciones)
+        await AppDataSource.runMigrations();
+        console.log("Migraciones ejecutadas.");
 
         await seedDatabase();
 
