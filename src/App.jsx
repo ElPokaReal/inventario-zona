@@ -80,7 +80,6 @@ const AppContent = () => {
         return <Dashboard />;
     }
   };
-
   return (
     <>
       <div className="flex h-screen bg-gray-100">
@@ -92,15 +91,11 @@ const AppContent = () => {
           <main className="flex-1 overflow-y-auto p-6">
             {renderContent()}
           </main>
-          <footer className="bg-gray-200 p-4 text-center text-gray-600 text-sm mt-auto">
-            <img src="/logo-largo.jpg" alt="Logo Inventario Zona" className="w-full mx-auto" />
-          </footer>
         </div>
       </div>
       
       {/* Notificación de sesión expirada */}
       <SessionExpiredNotification 
-        isVisible={sessionExpired}
         message={sessionMessage}
         onClose={() => {
           // La notificación se cierra automáticamente después de 3 segundos

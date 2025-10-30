@@ -62,7 +62,7 @@ const UserList = () => {
           },
         });
       } else {
-        await axios.post('http://localhost:5000/api/users/register', userData, {
+        await axios.post('http://localhost:5000/api/users', userData, {
           headers: {
             Authorization: `Bearer ${user.token}`,
           },
